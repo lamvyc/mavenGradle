@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- =====================================================
+         父模块坐标
+         packaging 必须为 pom，表示这是一个聚合/父模块
+    ====================================================== -->
+    <groupId>com.example</groupId>
+    <artifactId>maven-best-practice</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>maven-best-practice</name>
+    <description>Maven 最佳实践多模块项目演示</description>
+
+    <!-- =====================================================
+         聚合：列出所有子模块
+         Maven 会自动按依赖关系确定构建顺序
+         命令：mvn clean install（在此目录执行，构建所有模块）
+    ====================================================== -->
+    <modules>
+        <module>maven-common</module>
+        <module>maven-domain</module>
+        <module>maven-service</module>
+        <module>maven-web</module>
+    </modules>
+
+    <!-- =====================================================
+         全局属性，子模块继承
+    ====================================================== -->
+    <properties>
+        <java.version>11</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- 统一管理依赖版本号，修改此处即可全局生效 -->
+        <junit.version>4.13.2</junit.version>
+        <slf4j.version>1.7.36</slf4j.version>
+        <logback.version>1.2.11</logback.version>
+        <mysql.version>8.0.30</mysql.version>
+    </properties>
+
+    <!-- =====================================================
+         继承 - 版本锁定（dependencyManagement）
+         关键点：此处声明版本，但"不会"自动引入依赖。
+         子模块在 <dependencies> 中引用时无需写 <version>。
+         对比：直接写在 <dependencies> 里才会自动引入并继承。
+    ====================================================== -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- 测试：scope=test，子模块引用时也会继承 scope -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- 日志门面：compile scope（默认），会打包进 jar -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
+            <!-- 日志实现：runtime scope，运行时才需要，不会出现在编译类路径 -->
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <!-- 数据库驱动：runtime scope，代码里只用 JDBC 接口，不直接引用 MySQL 类 -->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- =====================================================
+         所有子模块都会自动继承此处的直接依赖（无需在子模块声明）
+         适合放所有模块都需要的依赖，如 lombok、slf4j-api
+    ====================================================== -->
+    <dependencies>
+        <!-- slf4j-api 所有模块都要用，放在父模块 dependencies 里自动继承 -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <!-- 版本由上面 dependencyManagement 锁定，此处无需写版本 -->
+        </dependency>
+    </dependencies>
+
+    <!-- =====================================================
+         插件管理（可选）：统一插件版本
+    ====================================================== -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0</version>
+                    <configuration>
+                        <includes>
+                            <include>**/*Test.java</include>
+                            <include>**/*Tests.java</include>
+                        </includes>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>

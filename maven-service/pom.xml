@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.example</groupId>
+        <artifactId>maven-best-practice</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>maven-service</artifactId>
+    <name>maven-service</name>
+    <description>业务逻辑模块 - 演示模块间依赖和依赖传递</description>
+
+    <dependencies>
+        <!-- =====================================================
+             模块间依赖：引用同项目的子模块
+             maven-service 依赖 maven-domain 和 maven-common
+             版本用 ${project.version} 保持和当前项目一致
+        ====================================================== -->
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>maven-domain</artifactId>
+            <version>${project.version}</version>
+            <!-- scope 默认 compile：domain 的所有 compile 依赖会传递过来 -->
+        </dependency>
+
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>maven-common</artifactId>
+            <version>${project.version}</version>
+            <!--
+                依赖传递演示：
+                maven-common 的 pom 里声明了：
+                  - slf4j-api（compile） → 传递给 service，service 可直接用
+                  - logback-classic（runtime）→ 传递给 service，runtime 范围保留
+                  - junit（test）→ "不传递"，service 要用 junit 必须自己声明
+            -->
+        </dependency>
+
+        <!-- junit 不会从 common 传递过来（test scope 不传递），必须自己声明 -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+
+        <!-- runtime scope 演示：mysql 驱动只在运行时需要
+             代码里用 java.sql.Connection 接口，不直接引用 MySQL 类 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <!-- scope=runtime 从父 dependencyManagement 继承 -->
+        </dependency>
+    </dependencies>
+
+</project>

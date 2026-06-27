@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- =====================================================
+         继承父模块
+         子模块不需要写 groupId 和 version，从父模块继承
+    ====================================================== -->
+    <parent>
+        <groupId>com.example</groupId>
+        <artifactId>maven-best-practice</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>maven-common</artifactId>
+    <name>maven-common</name>
+    <description>公共工具模块 - 演示依赖范围（scope）</description>
+
+    <dependencies>
+        <!-- compile scope（默认）：编译/测试/运行都需要，会打包进 jar
+             版本由父模块 dependencyManagement 锁定，此处不写版本 -->
+        <!-- slf4j-api 已在父 pom <dependencies> 中声明，此处自动继承，无需重复声明 -->
+
+        <!-- test scope：仅测试阶段可用，不会打包进 jar
+             典型：JUnit、Mockito -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <!-- 版本和 scope=test 均从父 dependencyManagement 继承 -->
+        </dependency>
+
+        <!-- runtime scope：运行时才需要，编译时不可见
+             这里演示：logback 是 slf4j 的实现，代码里只写 slf4j 接口，
+             不直接引用 logback 的类，所以 runtime 即可 -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <!-- scope=runtime 从父 dependencyManagement 继承 -->
+        </dependency>
+    </dependencies>
+
+</project>
