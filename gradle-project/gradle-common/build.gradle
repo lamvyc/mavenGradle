@@ -1,0 +1,9 @@
+// gradle-common 模块的构建配置
+// 职责：公共工具类，演示 Gradle 依赖范围（Configuration）
+dependencies {
+    // runtimeOnly：logback 是 slf4j 的实现，代码里只调用 slf4j 接口
+    // 不写 runtimeOnly 改成 implementation 也能跑，但会污染编译类路径
+    runtimeOnly "ch.qos.logback:logback-classic:${logbackVersion}"
+
+    // slf4j-api 和 junit 已在根 build.gradle subprojects 里声明，无需重复
+}

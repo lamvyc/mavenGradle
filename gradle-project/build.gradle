@@ -1,0 +1,60 @@
+// =====================================================
+// 根项目 build.gradle
+// 职责：统一管理所有子模块的公共配置
+// 等同于 Maven 父 pom.xml 的 <properties> + <dependencyManagement>
+// =====================================================
+
+// allprojects：对根项目 + 所有子模块都生效
+allprojects {
+    group = 'com.example'
+    version = '1.0-SNAPSHOT'
+}
+
+// subprojects：只对子模块生效（不含根项目本身）
+subprojects {
+    // 所有子模块都应用 java 插件（提供 compileJava、test、jar 等 task）
+    apply plugin: 'java'
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    // 统一编码，避免中文乱码
+    compileJava.options.encoding = 'UTF-8'
+    compileTestJava.options.encoding = 'UTF-8'
+
+    // 依赖仓库：阿里云镜像加速，找不到再去 Maven Central
+    repositories {
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        mavenCentral()
+    }
+
+    // 版本变量统一管理
+    // 等同于 Maven 父 pom 的 <properties> 中定义版本号
+    // 修改这里，所有子模块自动生效
+    ext {
+        slf4jVersion    = '1.7.36'
+        logbackVersion  = '1.2.11'
+        mysqlVersion    = '8.0.30'
+        junitVersion    = '4.13.2'
+    }
+
+    // 所有子模块都有的依赖（直接引入，不需要子模块自己声明）
+    // 等同于 Maven 父 pom 的 <dependencies>（区别于 <dependencyManagement>）
+    dependencies {
+        // slf4j-api：compile，所有模块都需要打日志
+        // 版本用上面 ext 定义的变量
+        implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+
+        // junit：testImplementation，所有模块都需要写单元测试
+        testImplementation "junit:junit:${junitVersion}"
+    }
+
+    // 测试任务配置：显示每个测试的通过/失败结果
+    test {
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+    }
+}

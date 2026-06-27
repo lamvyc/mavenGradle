@@ -1,0 +1,14 @@
+// gradle-service：业务逻辑模块
+// 演示：模块间依赖 + implementation vs api 的区别 + 依赖传递
+dependencies {
+    // implementation：依赖 domain 和 common，但不暴露给调用方（gradle-web）
+    // 如果改成 api，gradle-web 不用声明也能直接用 domain 和 common 的类
+    // 推荐用 implementation，减少意外的依赖传递
+    implementation project(':gradle-domain')
+    implementation project(':gradle-common')
+
+    // runtimeOnly：mysql 驱动只在运行时需要，代码里只用 java.sql.* 接口
+    runtimeOnly "mysql:mysql-connector-java:${mysqlVersion}"
+
+    // junit 已从根 build.gradle 继承，无需重复声明
+}

@@ -1,0 +1,2 @@
+// gradle-domain：纯实体模块，无额外依赖
+// slf4j-api 和 junit 已从根 build.gradle 继承，无需再写

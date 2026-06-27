@@ -1,0 +1,8 @@
+// 声明所有子模块
+// 等同于 Maven 父 pom.xml 的 <modules>
+rootProject.name = 'gradle-best-practice'
+
+include 'gradle-common'
+include 'gradle-domain'
+include 'gradle-service'
+include 'gradle-web'

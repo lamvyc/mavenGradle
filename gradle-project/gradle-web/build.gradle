@@ -1,0 +1,27 @@
+// gradle-web：入口模块，最顶层
+// 依赖 service，通过依赖传递间接获得 domain 和 common
+// 但因为 service 用的是 implementation（不是 api），
+// web 无法直接 import domain/common 的类，需要自己声明（或改 service 为 api）
+dependencies {
+    implementation project(':gradle-service')
+
+    // 演示依赖排除：如果某个传递依赖带来了不需要的包
+    // implementation(project(':gradle-service')) {
+    //     exclude group: 'some.group', module: 'some-module'
+    // }
+}
+
+// 配置可执行 jar，指定 main 方法所在的类
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.example.web.Application'
+    }
+    // 将所有依赖打包进 jar（fat jar），否则运行时找不到依赖类
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    // 避免 META-INF 文件冲突
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
