@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.example</groupId>
+        <artifactId>maven-best-practice</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>maven-web</artifactId>
+    <name>maven-web</name>
+    <description>Web 入口模块 - 演示依赖排除和最终聚合</description>
+
+    <dependencies>
+        <!-- 依赖 service 模块（传递依赖链：web → service → domain, common） -->
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>maven-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- =====================================================
+             依赖排除演示
+             假设某个依赖传递了旧版本的 slf4j，我们要排除它
+             实际场景：spring-boot-starter-web 内置 logback，排除 tomcat 换 jetty 等
+        ====================================================== -->
+        <!--
+        <dependency>
+            <groupId>some.library</groupId>
+            <artifactId>some-artifact</artifactId>
+            <version>1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        -->
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- 打包为可执行 jar，指定主类 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.example.web.Application</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
